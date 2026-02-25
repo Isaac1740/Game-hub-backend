@@ -119,16 +119,18 @@ def connect4_mode_set():
 # CHESS GAME
 # ----------------------------
 
-@app.route("/api/chess/state", methods=["GET", "POST"])
+@app.route("/api/chess/state", methods=["GET"])
 def chess_state():
-    if request.method == "POST":
-        data = request.json or {}
-        chessmulti.load_game(
-            data.get("difficulty", "easy"),
-            data.get("mode", "pvp")
-        )
     return jsonify(chessmulti.get_state())
 
+@app.route("/api/chess/start", methods=["POST"])
+def chess_start():
+    data = request.json or {}
+    chessmulti.load_game(
+        data.get("difficulty", "easy"),
+        data.get("mode", "pvp")
+    )
+    return jsonify(chessmulti.get_state())
 
 @app.route("/api/chess/player", methods=["POST"])
 def chess_player():
@@ -136,11 +138,9 @@ def chess_player():
     result, status = chessmulti.player_move(data)
     return jsonify(result), status
 
-
 @app.route("/api/chess/agent", methods=["POST"])
 def chess_agent():
     return jsonify(chessmulti.agent_move())
-
 
 # ----------------------------
 # RUN SERVER
